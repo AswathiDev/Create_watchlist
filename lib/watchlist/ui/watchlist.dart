@@ -254,6 +254,36 @@ void _createWatchlist() {
 //       ),
 //     );
 //   }
+Widget _renderWatchListEmpty(){
+  return   Scaffold(
+              appBar: AppBar(
+                title: const Text(
+                  'Watchlist',
+                  style: TextStyle(color: Colors.white),
+                ),
+                backgroundColor: const Color.fromARGB(255, 66, 203, 200),
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        _createWatchlist();
+                      },
+                      icon: const Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ))
+                ],
+              ),
+              body: Center(
+                child:Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.network('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6XckElnl3xZemGoM4MtR3UPFP6l693I4wcXxaGbOt6AimXUiPPgOtGbIvaEw_Tz9zLy8&usqp=CAU',),
+                                  const  Text('Watchlist is empty'),
+ ],
+                ),
+                 
+              ));
+}
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SymbolsBloc, SymbolsState>(
@@ -269,7 +299,8 @@ void _createWatchlist() {
           //     .map((group) => group["group_name"] as String)
           //     .toList();
 print("result is in ${successState.result?.length}");
-          return DefaultTabController(
+if(successState.result.length>0){
+ return DefaultTabController(
             length: successState.result.length,
             child: Scaffold(
               appBar: AppBar(
@@ -343,34 +374,15 @@ print("result is in ${successState.result?.length}");
               ),
             ),
           );
+}
+else{
+      return    _renderWatchListEmpty();
+
+}
+         
         } else {
-          return Scaffold(
-              appBar: AppBar(
-                title: const Text(
-                  'Watchlist',
-                  style: TextStyle(color: Colors.white),
-                ),
-                backgroundColor: const Color.fromARGB(255, 10, 153, 132),
-                actions: [
-                  IconButton(
-                      onPressed: () {
-                        _createWatchlist();
-                      },
-                      icon: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ))
-                ],
-              ),
-              body: Center(
-                child:Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.network('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6XckElnl3xZemGoM4MtR3UPFP6l693I4wcXxaGbOt6AimXUiPPgOtGbIvaEw_Tz9zLy8&usqp=CAU',),
-                                  const  Text('Watchlist is empty'),
- ],
-                ),
-                 
-              )); // Loading state
+       return   _renderWatchListEmpty();
+          // Loading state
         }
       },
     );

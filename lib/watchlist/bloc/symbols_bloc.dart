@@ -15,7 +15,7 @@ class SymbolsBloc extends Bloc<SymbolsEvent, SymbolsState> {
   List<GroupModel> symbolLocalList = [];
   List<Map<String, dynamic>> result = [];
   List sortLocalList = [];
-  List<List<GroupModel>>dividedContacts=[];
+  List<List<GroupModel>> dividedContacts = [];
   List<Map<String, dynamic>> sortResult = [
     // {
     //   "tabIndex": 0,
@@ -23,23 +23,22 @@ class SymbolsBloc extends Bloc<SymbolsEvent, SymbolsState> {
     // }
   ];
   SymbolsBloc() : super(SymbolsInitial()) {
-      on<SymbolInitialFetchEvent>(symbolInitialFetchEvent);
-          on<SymbolAddToListEvent>(symbolAddToGroupEvent);
+    on<SymbolInitialFetchEvent>(symbolInitialFetchEvent);
+    on<SymbolAddToListEvent>(symbolAddToGroupEvent);
     on<SymbolsAddToGroupEvent>(symbolsAddToGroupEvent);
-        on<OpenBottomSheetEvent>(openBottomSheetEvent);
+    on<OpenBottomSheetEvent>(openBottomSheetEvent);
     on<SymbolsSortSingleAddEvent>(symbolsSortSingleAddEvent);
 
     on<SymbolsSortDoneEvent>(symbolsSortDone);
-
-
+    on<SymbolsBackButtonNavigationEvent>(symbolsBackButtonNavigationEvent);
   }
 
-   FutureOr<void> symbolInitialFetchEvent(
+  FutureOr<void> symbolInitialFetchEvent(
       SymbolInitialFetchEvent event, Emitter<SymbolsState> emit) async {
     emit(SymbolsBlocInitialFetchLoadingState());
 
     // _symbolsList = await SymbolsRepo.fetchPost();
-print(sortResult);
+    print(sortResult);
     var client = http.Client();
     List<GroupModel> itemList = [];
     try {
@@ -53,28 +52,31 @@ print(sortResult);
         itemList.add(post);
       }
       _symbolsList = itemList;
- dividedContacts = _divideContactsIntoGroups(_symbolsList, 20);
- for (int i = 0; i < dividedContacts.length; i++) {
-  print("Group ${i + 1}:");
-  for (var contact in dividedContacts[i]) {
-    print("Name: ${contact.name}, Contacts: ${contact.contacts}");
-  }
-}
+      dividedContacts = _divideContactsIntoGroups(_symbolsList, 20);
+      for (int i = 0; i < dividedContacts.length; i++) {
+        print("Group ${i + 1}:");
+        for (var contact in dividedContacts[i]) {
+          print("Name: ${contact.name}, Contacts: ${contact.contacts}");
+        }
+      }
+      sortResult=[];
       emit(SymbolsBlocInitialFetchSuccessState(
           symbols: dividedContacts, sortResult: sortResult));
     } catch (e) {
       emit(SymbolsFetchErrorState());
     }
   }
-    List<List<GroupModel>> _divideContactsIntoGroups(List<GroupModel> contacts, int groupSize) {
+
+  List<List<GroupModel>> _divideContactsIntoGroups(
+      List<GroupModel> contacts, int groupSize) {
     final dividedList = <List<GroupModel>>[];
     for (int i = 0; i < contacts.length; i += groupSize) {
-      final group = contacts.sublist(i, i + groupSize > contacts.length ? contacts.length : i + groupSize);
+      final group = contacts.sublist(
+          i, i + groupSize > contacts.length ? contacts.length : i + groupSize);
       dividedList.add(group);
     }
     return dividedList;
   }
-
 
   FutureOr<void> symbolAddToGroupEvent(
       SymbolAddToListEvent event, Emitter<SymbolsState> emit) {
@@ -93,21 +95,22 @@ print(sortResult);
 
     //   _symbolsList = updatedSymbol;
     // }
- for (var groupList in dividedContacts) {
-    final index = groupList.indexWhere((item) => item.id == event.groupModel.id);
-    if (index != -1) {
-      print(event.groupModel.name);
-      final updatedGroupModel = GroupModel(
-        id: event.groupModel.id,
-        url: event.groupModel.url,
-        checkedNew:event. checked,
-        name: event.groupModel.name,
-        contacts: event.groupModel.contacts,
-      );
-      groupList[index] = updatedGroupModel;
-      break; // Stop searching in other groups once found
+    for (var groupList in dividedContacts) {
+      final index =
+          groupList.indexWhere((item) => item.id == event.groupModel.id);
+      if (index != -1) {
+        print(event.groupModel.name);
+        final updatedGroupModel = GroupModel(
+          id: event.groupModel.id,
+          url: event.groupModel.url,
+          checkedNew: event.checked,
+          name: event.groupModel.name,
+          contacts: event.groupModel.contacts,
+        );
+        groupList[index] = updatedGroupModel;
+        break; // Stop searching in other groups once found
+      }
     }
-  }
     if (event.checked) {
       if (!symbolLocalList.contains(event.groupModel)) {
         symbolLocalList.add(event.groupModel);
@@ -115,12 +118,12 @@ print(sortResult);
     } else {
       symbolLocalList.remove(event.groupModel);
     }
-print(symbolLocalList.length);
+    print(symbolLocalList.length);
     emit(SymbolsBlocInitialFetchSuccessState(
         symbols: dividedContacts, sortResult: sortResult));
   }
 
-    FutureOr<void> symbolsAddToGroupEvent(
+  FutureOr<void> symbolsAddToGroupEvent(
       SymbolsAddToGroupEvent event, Emitter<SymbolsState> emit) {
 // List<GroupModel> groupModels = event.symbolLocalList;
 //  Map<String, List<String>> groupedData = {};
@@ -146,14 +149,17 @@ print(symbolLocalList.length);
     if (!groupExists) {
       result.add(groupMap);
     }
-print("result is ${result}");
+    print("result is ${result}");
     emit(SymbolsAddedToGroupSuccessState(result: result));
     // print(result);
   }
 
-  FutureOr<void> openBottomSheetEvent(OpenBottomSheetEvent event, Emitter<SymbolsState> emit) {
+  FutureOr<void> openBottomSheetEvent(
+      OpenBottomSheetEvent event, Emitter<SymbolsState> emit) {
     emit(openBottomSheetSuccessEvent());
-  } FutureOr<void> symbolsSortSingleAddEvent(
+  }
+
+  FutureOr<void> symbolsSortSingleAddEvent(
       SymbolsSortSingleAddEvent event, Emitter<SymbolsState> emit) {
     bool tabIndexExists = false;
     bool newItemExists = false;
@@ -228,20 +234,35 @@ print("result is ${result}");
       // ... Add your logic here if needed
     }
   }
-
-
-  FutureOr<void> symbolsSortDone(SymbolsSortDoneEvent event, Emitter<SymbolsState> emit) {
-    int tabSelected = event.tabSelected;
+FutureOr<void> symbolsSortDone(
+  SymbolsSortDoneEvent event, Emitter<SymbolsState> emit) {
+    
+  int tabSelected = event.tabSelected;
   List<String> sortList = event.sortList;
 
-  // Create a copy of the dividedContacts list to modify only the selected tab's data
-  List<List<GroupModel>> updatedDividedContacts = List.from(dividedContacts);
-
   // Find the group list based on the tabSelected
-  List<GroupModel> groupList = updatedDividedContacts[tabSelected];
+  List<GroupModel> groupList = dividedContacts[tabSelected];
 
-  // Sort the groupList based on the selected sorting criteria
-  groupList.sort((a, b) {
+  // If sortList is empty, emit the original groupList
+  if (sortList.isEmpty) {
+    // Revert the groupList back to its original order
+    groupList.sort((a, b) =>  int.parse(a.id).compareTo(int.parse(b.id)));
+
+    // Update the sorted groupList in the dividedContacts list
+    dividedContacts[tabSelected] = groupList;
+
+    // Emit the updated state
+    emit(SymbolsBlocInitialFetchSuccessState(
+      symbols: dividedContacts,
+      sortResult: sortResult,
+    ));
+  }
+
+  // Create a copy of the groupList to sort
+  List<GroupModel> sortedGroupList = List.from(groupList);
+
+  // Sort the sortedGroupList based on the selected sorting criteria
+  sortedGroupList.sort((a, b) {
     for (String sortCriteria in sortList) {
       switch (sortCriteria) {
         case ALPHABETICALLY_ASCENDING:
@@ -257,13 +278,15 @@ print("result is ${result}");
           }
           break;
         case USERID_ASCENDING:
-          int useridComparison = int.parse(a.contacts).compareTo(int.parse(b.contacts));
+          int useridComparison =
+              int.parse(a.id).compareTo(int.parse(b.id));
           if (useridComparison != 0) {
             return useridComparison;
           }
           break;
         case USERID_DESCENDING:
-          int useridComparison = int.parse(b.contacts).compareTo(int.parse(a.contacts));
+          int useridComparison =
+              int.parse(b.id).compareTo(int.parse(a.id));
           if (useridComparison != 0) {
             return useridComparison;
           }
@@ -273,12 +296,89 @@ print("result is ${result}");
     return 0; // Default case, no sorting
   });
 
-  // Update the modified tab's data in the dividedContacts list
-  updatedDividedContacts[tabSelected] = groupList;
+  // Update the sorted groupList in the dividedContacts list
+  dividedContacts[tabSelected] = sortedGroupList;
 
   // Emit the updated state
   emit(SymbolsBlocInitialFetchSuccessState(
-    symbols: updatedDividedContacts, sortResult: sortResult,
+    symbols: dividedContacts,
+    sortResult: sortResult,
   ));
+}
+
+//   FutureOr<void> symbolsSortDone(
+//       SymbolsSortDoneEvent event, Emitter<SymbolsState> emit) {
+//     int tabSelected = event.tabSelected;
+//     List<String> sortList = event.sortList;
+
+//     // Create a copy of the dividedContacts list to modify only the selected tab's data
+//     List<List<GroupModel>> updatedDividedContacts = List.from(dividedContacts);
+
+//     // Find the group list based on the tabSelected
+//     List<GroupModel> groupList = updatedDividedContacts[tabSelected];
+// // If sortList is empty, emit the original groupList
+//   if (sortList.isEmpty) {
+
+
+//     for(int i=0;i<dividedContacts[tabSelected].length;i++){
+//       print(dividedContacts[tabSelected][i].name);
+//     }
+//     emit(SymbolsBlocInitialFetchSuccessState(
+//       symbols: dividedContacts,
+//       sortResult: sortResult,
+//     ));
+//   }
+//   // Create a copy of the original groupList before sorting
+
+//   // Sort the groupList based on the selected sorting criteria
+//   groupList.sort((a, b) {
+//     for (String sortCriteria in sortList) {
+//       switch (sortCriteria) {
+//         case ALPHABETICALLY_ASCENDING:
+//           int nameComparison = a.name.compareTo(b.name);
+//           if (nameComparison != 0) {
+//             return nameComparison;
+//           }
+//           break;
+//         case ALPHABETICALLY_DESCENDING:
+//           int nameComparison = b.name.compareTo(a.name);
+//           if (nameComparison != 0) {
+//             return nameComparison;
+//           }
+//           break;
+//         case USERID_ASCENDING:
+//           int useridComparison =
+//               int.parse(a.id).compareTo(int.parse(b.id));
+//           if (useridComparison != 0) {
+//             return useridComparison;
+//           }
+//           break;
+//         case USERID_DESCENDING:
+//           int useridComparison =
+//               int.parse(b.id).compareTo(int.parse(a.id));
+//           if (useridComparison != 0) {
+//             return useridComparison;
+//           }
+//           break;
+//       }
+//     }
+//     return 0; // Default case, no sorting
+//   });
+
+//   // Update the modified tab's data in the dividedContacts list
+//   updatedDividedContacts[tabSelected] = groupList;
+
+//   // Emit the updated state
+//   emit(SymbolsBlocInitialFetchSuccessState(
+//     symbols: updatedDividedContacts,
+//     sortResult: sortResult,
+//   ));
+// }
+
+
+  FutureOr<void> symbolsBackButtonNavigationEvent(SymbolsBackButtonNavigationEvent event, Emitter<SymbolsState> emit) {
+    print('result:${result}');
+        emit(SymbolsAddedToGroupSuccessState(result: result));
+
   }
 }

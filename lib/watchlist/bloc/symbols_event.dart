@@ -30,3 +30,6 @@ class SymbolsSortSingleAddEvent extends SymbolsEvent{
  late String sort ;
     SymbolsSortSingleAddEvent({required this.tabSelected,required this.sort});
 }
+class SymbolsBackButtonNavigationEvent extends SymbolsEvent{
+
+}

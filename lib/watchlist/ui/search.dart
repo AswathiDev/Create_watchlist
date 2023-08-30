@@ -61,7 +61,10 @@ print("is tabinde${_tabController.index}");
         SymbolsSortSingleAddEvent(tabSelected: tabSeleted, sort: sortItem));
   }
 _showBottomSheet(){
-
+    isAlphabeticallyAscending = false;
+    isAlphabeticallyDescending = false;
+    isUserIdAscending = false;
+    isUserIdDescending = false;
 showModalBottomSheet(context: context, builder: (BuildContext context) {
           return BlocBuilder<SymbolsBloc, SymbolsState>(
             bloc: widget.bloc,
@@ -139,11 +142,11 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                                     if (isUserIdDescending) {
                                       sortLocalList.add(USERID_DESCENDING);
                                     }
-                                    if (sortLocalList.isNotEmpty) {
+                                    // if (sortLocalList.isNotEmpty) {
                                       widget.bloc.add(SymbolsSortDoneEvent(
                                           sortList: sortLocalList,
                                           tabSelected: _tabController.index));
-                                    }
+                                    // }
 
                                     Navigator.pop(context);
                                   },
@@ -178,7 +181,7 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                                                     : Colors.black),
                                           ),
                                           Icon(
-                                            Icons.arrow_upward,
+                                            Icons.arrow_downward,
                                             color: isAlphabeticallyAscending
                                                 ? Colors.blue
                                                 : Colors.black,
@@ -256,7 +259,7 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                                                     ? Colors.blue
                                                     : Colors.black),
                                           ),
-                                          Icon(Icons.arrow_upward,
+                                          Icon(Icons.arrow_downward,
                                               color: isUserIdAscending
                                                   ? Colors.blue
                                                   : Colors.black),
@@ -269,7 +272,7 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                                       ),
                                       onTap: () => _check(USERID_ASCENDING),
                                     ),
-                                    SizedBox(width: 20),
+                                 const  SizedBox(width: 20),
                                     InkWell(
                                       child: Row(
                                         children: [
@@ -306,108 +309,119 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
             },
           );
         } );}
+
+          Future<bool> _onBackPressed() async {
+            print('back button clicke');
+              widget.bloc.add(SymbolsBackButtonNavigationEvent());
+                return true;
+
+          }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(
-            title: const Text('Symbols'),
-           ),floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(alignment: Alignment.bottomRight,
-          // decoration: BoxDecoration(color: Colors.grey),
-            width:double.infinity,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: IconButton(
-              onPressed: () {
-                // Handle button press for the first button
-_showBottomSheet();     
-         },icon: Icon(Icons.sort),
-              style: ElevatedButton.styleFrom(
-                elevation: 8,
-              ),
-            ),
-          ),
-          const SizedBox(height: 10), // Add a spacing between the buttons
-          Container(
-            width:double.infinity,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: ElevatedButton(
-              onPressed: () {
-                // Handle button press for the second button
-                // Add your logic here
-                  if (widget.bloc.symbolLocalList.isNotEmpty) {
-                  widget.bloc.add(SymbolsAddToGroupEvent(
-                    groupName: widget.groupName,
-                    symbolLocalList: widget.bloc.symbolLocalList,
-                  ));
-                  Navigator.of(context).pop();
-                } else {
-                  _showValidationMsg();
-                }
-              },
-              child: const Text('Add to group'),
-              style: ElevatedButton.styleFrom(
-                elevation: 8,
-              ),
-            ),
-          ),
-        ],
+    return WillPopScope( onWillPop: _onBackPressed,
+      child: Scaffold(appBar: AppBar(
+              title: const Text('Symbols'),
+             ),floatingActionButton: Column(
+  mainAxisAlignment: MainAxisAlignment.end,
+  children: [
+    Container(
+      alignment: Alignment.bottomRight,
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: FloatingActionButton(
+        onPressed: () {
+          // Handle button press for sorting
+          _showBottomSheet();
+        },
+        child: Icon(Icons.sort),
+        elevation: 8,
+        backgroundColor: Colors.blue, // Customize the background color
       ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      
-
-      body: BlocConsumer<SymbolsBloc, SymbolsState>(
-          bloc: widget.bloc,
-          listener: (context, state) {
-            // You can handle any additional UI-related logic here if needed
-         
-          },
-          builder: (context, state) {
-            switch (state.runtimeType) {
-              case SymbolsBlocInitialFetchLoadingState:
-                return const Center(child: CircularProgressIndicator());
-              case SymbolsFetchErrorState:
-                return const Center(child: Text('Error !!'));
-              case SymbolsBlocInitialFetchSuccessState:
-                final successState =
-                    state as SymbolsBlocInitialFetchSuccessState;
-                var dataList = successState.symbols;
-
-                return DefaultTabController(
-                  
-                  length: dataList.length,
-                  child: Column(
-                    children: [
-                      TabBar(
-                        controller: _tabController,
-                        isScrollable: true,
-                        tabs: List.generate(
-                          dataList.length,
-                          (index) => Tab(text: 'Symbols ${index + 1}'),
-                        ),
-                      ),
-                      Expanded(
-                        child: TabBarView(
-                                          controller: _tabController, // Pass the _tabController here
-
-                          children: List.generate(
+    ),
+    SizedBox(height: 10), // Add spacing between buttons
+    Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: ElevatedButton(
+        onPressed: () {
+          // Handle button press for adding to group
+          if (widget.bloc.symbolLocalList.isNotEmpty) {
+            widget.bloc.add(SymbolsAddToGroupEvent(
+              groupName: widget.groupName,
+              symbolLocalList: widget.bloc.symbolLocalList,
+            ));
+            Navigator.of(context).pop();
+          } else {
+            _showValidationMsg();
+          }
+        },
+        child: const Text('Add to group'),
+        style: ElevatedButton.styleFrom(
+          elevation: 8,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30), // Round button corners
+          ),
+        ),
+      ),
+    ),
+  ],
+),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        
+    
+        body: BlocConsumer<SymbolsBloc, SymbolsState>(
+            bloc: widget.bloc,
+            listener: (context, state) {
+              // You can handle any additional UI-related logic here if needed
+           
+            },
+            builder: (context, state) {
+              switch (state.runtimeType) {
+                case SymbolsBlocInitialFetchLoadingState:
+                  return const Center(child: CircularProgressIndicator());
+                case SymbolsFetchErrorState:
+                  return const Center(child: Text('Error in retrieving data !!'));
+                case SymbolsBlocInitialFetchSuccessState:
+                  final successState =
+                      state as SymbolsBlocInitialFetchSuccessState;
+                  var dataList = successState.symbols;
+    
+                  return DefaultTabController(
+                    
+                    length: dataList.length,
+                    child: Column(
+                      children: [
+                        TabBar(
+                          controller: _tabController,
+                          isScrollable: true,
+                          tabs: List.generate(
                             dataList.length,
-                            (index) => ContactTab(
-                                contacts: dataList[index], bloc: widget.bloc),
+                            (index) => Tab(text: 'Symbols ${index + 1}'),
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                );
-
-              default:
-                return const SizedBox(
-                  height: 10,
-                );
-            }
-            ;
-          }),
+                        Expanded(
+                          child: TabBarView(
+                                            controller: _tabController, // Pass the _tabController here
+    
+                            children: List.generate(
+                              dataList.length,
+                              (index) => ContactTab(
+                                  contacts: dataList[index], bloc: widget.bloc),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+    
+                default:
+                  return const SizedBox(
+                    height: 10,
+                  );
+              }
+              ;
+            }),
+      ),
     );
   }
 }
