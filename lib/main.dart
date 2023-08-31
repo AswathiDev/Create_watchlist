@@ -19,6 +19,11 @@ class MyApp extends StatelessWidget {
         
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        appBarTheme:const AppBarTheme(
+          iconTheme: IconThemeData(
+            color: Colors.white, // Change this color to your desired color
+          ),
+        ),
       ),
       // home:BlocProvider(create:  (context)=>BstBloc(),child: const BstScreen(),)
       home:BlocProvider(create: (context)=>SymbolsBloc(),child: const WatchlistScreen(),)

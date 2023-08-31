@@ -113,15 +113,17 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10.0, vertical: 3),
+                            padding: const EdgeInsets.only(
+                                left: 8.0, top: 8,bottom: 3),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
                                   'Sorting',
                                   style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 18,
+                                                                        color:  Color.fromARGB(255,27,42,82),
+
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -153,8 +155,9 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                                   child: const Text(
                                     'Done',
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
+                                    color:  Color.fromARGB(255,27,42,82)
                                     ),
                                   ),
                                 ),
@@ -320,7 +323,10 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
   Widget build(BuildContext context) {
     return WillPopScope( onWillPop: _onBackPressed,
       child: Scaffold(appBar: AppBar(
-              title: const Text('Symbols'),
+              title: const Text('Symbols',style: TextStyle(color: Colors.white),
+),
+                              backgroundColor: Color.fromARGB(255,27,42,82),
+
              ),floatingActionButton: Column(
   mainAxisAlignment: MainAxisAlignment.end,
   children: [
@@ -333,9 +339,9 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
           // Handle button press for sorting
           _showBottomSheet();
         },
-        child: Icon(Icons.sort),
+        child: Icon(Icons.sort,color: Colors.white,),
         elevation: 8,
-        backgroundColor: Colors.blue, // Customize the background color
+        backgroundColor: Color.fromARGB(255,27,42,82), // Customize the background color
       ),
     ),
     SizedBox(height: 10), // Add spacing between buttons
@@ -355,8 +361,8 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
             _showValidationMsg();
           }
         },
-        child: const Text('Add to group'),
-        style: ElevatedButton.styleFrom(
+        child: const Text('Add to group',style: TextStyle(color: Colors.white),),
+        style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255,27,42,82),
           elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30), // Round button corners
@@ -391,12 +397,16 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                     length: dataList.length,
                     child: Column(
                       children: [
-                        TabBar(
-                          controller: _tabController,
-                          isScrollable: true,
-                          tabs: List.generate(
-                            dataList.length,
-                            (index) => Tab(text: 'Symbols ${index + 1}'),
+                        Container( color: Color.fromARGB(255,27,42,82),
+                          child: TabBar(
+ labelColor: Colors.white,
+          unselectedLabelColor: Color.fromARGB(255, 186, 179, 179),
+                                    controller: _tabController,
+                            isScrollable: true,
+                            tabs: List.generate(
+                              dataList.length,
+                              (index) => Tab(text: 'Symbols ${index + 1}'),
+                            ),
                           ),
                         ),
                         Expanded(
@@ -443,59 +453,65 @@ class ContactTab extends StatelessWidget {
             //   // Other contact details
             // );
 
-            Container(
-          margin: const EdgeInsets.all(4),
-          decoration: const BoxDecoration(
-            color: Color.fromARGB(255, 164, 231, 221),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          contacts[index].name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+            Card(color: Color.fromARGB(255, 255, 255, 255),
+              child: Container(
+                      margin: const EdgeInsets.all(4),
+                      decoration:  const BoxDecoration(
+                              color: Color.fromARGB(255, 255, 255, 255),borderRadius: BorderRadius.all(Radius.circular(10))
+                            ),
+                      child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            contacts[index].name,
+                             style:const  TextStyle(
+                                                color: Color.fromARGB(255,101,110,138),
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                           ),
-                        ),
-                        Text(contacts[index].contacts),
-                      ],
+                          Text(contacts[index].contacts, style:const  TextStyle(
+                                                color: Color.fromARGB(255,117,182,196),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                              )),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              contacts[index].checkedNew
-                  ? IconButton(
-                      onPressed: () {
-                        bloc.add(SymbolAddToListEvent(
-                            groupModel: contacts[index], checked: false));
-                      },
-                      icon: const Icon(
-                        Icons.check_circle_sharp,
-                        size: 30,
-                      ))
-                  : IconButton(
-                      onPressed: () {
-                        bloc.add(SymbolAddToListEvent(
-                            groupModel: contacts[index], checked: true));
-                      },
-                      icon: const Icon(
-                        Icons.check_circle_outline_sharp,
-                        size: 30,
-                      ))
-              // ElevatedButton(onPressed: onPressed, child: Text('Click'))
-            ],
-          ),
-        );
+                  ],
+                ),
+                contacts[index].checkedNew
+                    ? IconButton(
+                        onPressed: () {
+                          bloc.add(SymbolAddToListEvent(
+                              groupModel: contacts[index], checked: false));
+                        },
+                        icon: const Icon(
+                          Icons.check_circle_sharp,
+                          size: 30,color: Color.fromARGB(255, 2, 99, 5),
+                        ))
+                    : IconButton(
+                        onPressed: () {
+                          bloc.add(SymbolAddToListEvent(
+                              groupModel: contacts[index], checked: true));
+                        },
+                        icon: const Icon(
+                          Icons.check_circle_outline_sharp,color: Color.fromARGB(255, 157, 165, 158),
+                          size: 30,
+                        ))
+                // ElevatedButton(onPressed: onPressed, child: Text('Click'))
+              ],
+                      ),
+                    ),
+            );
       },
     );
   }

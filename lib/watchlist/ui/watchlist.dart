@@ -17,14 +17,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
   TextEditingController groupNameController = TextEditingController();
   List<String> tabNames = ['Tab 1', 'Tab 2', 'Tab 3'];
 
-  // List<String> groupNames = _symbolBloc?.result.map((group) => group["group_name"] as String).toList();
-//  @override
-//   void didUpdateWidget(covariant WatchlistScreen oldWidget) {
-//     super.didUpdateWidget(oldWidget);
-//     // This method is called when the widget is updated with new information.
-//     // You can perform actions here based on the updated widget's properties.
-//     print('Widget updated: $widget cz');
-//   }
+  
 
   void _dismissBottomSheet(BuildContext context) {
     NavigationHelper.closeCurrentScreen(context);
@@ -168,7 +161,7 @@ void _createWatchlist() {
                         children: [ ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                              side: const BorderSide(color: Colors.blue), // Border color
+                              side: const BorderSide(color: Color.fromARGB(255,27,42,82),), // Border color
 
                         ),
                         onPressed: () {
@@ -177,13 +170,13 @@ void _createWatchlist() {
                         },
                         child: const Text(
                           'Cancel',
-                          style: TextStyle(color: Colors.teal),
+                          style: TextStyle(color: Color.fromARGB(255,27,42,82),),
                         ),
                       ),
                     const  SizedBox(width: 10,),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.teal,
+                              backgroundColor: const Color.fromARGB(255,27,42,82),
                             ),
                             onPressed: () {
                               if(groupNameController.text.isNotEmpty){
@@ -254,6 +247,7 @@ void _createWatchlist() {
 //       ),
 //     );
 //   }
+
 Widget _renderWatchListEmpty(){
   return   Scaffold(
               appBar: AppBar(
@@ -261,7 +255,7 @@ Widget _renderWatchListEmpty(){
                   'Watchlist',
                   style: TextStyle(color: Colors.white),
                 ),
-                backgroundColor: const Color.fromARGB(255, 66, 203, 200),
+                backgroundColor: Color.fromARGB(255,27,42,82),
                 actions: [
                   IconButton(
                       onPressed: () {
@@ -303,21 +297,30 @@ if(successState.result.length>0){
  return DefaultTabController(
             length: successState.result.length,
             child: Scaffold(
-              appBar: AppBar(
+              appBar: AppBar(                                backgroundColor: Color.fromARGB(255,27,42,82),
+
+
                 title: const Text(
                   'Watchlist',
+                  
                   style: TextStyle(color: Colors.white),
                 ),
-                bottom: TabBar(isScrollable: true, // Allow tabs to scroll if needed
-      indicatorSize: TabBarIndicatorSize.label,
-                  // tabs: tabNames.map((String tabName) {
-                  //   return Tab(text: tabName);
-                  // }).toList(),
-                  tabs: successState.result.map((group) {
-                    return Align(alignment: Alignment.bottomRight, child: Tab(text: group["tabIndex"]));
-                  }).toList(),
-                ),
-                backgroundColor: const Color.fromARGB(255, 10, 153, 132),
+      //           bottom: TabBar(isScrollable: true, // Allow tabs to scroll if needed
+      // indicatorSize: TabBarIndicatorSize.label,
+      //       labelPadding: const EdgeInsets.only(left: 16.0), // Adjust left padding
+
+      //             // tabs: tabNames.map((String tabName) {
+      //             //   return Tab(text: tabName);
+      //             // }).toList(),
+      //             tabs: successState.result.map((group) {
+      //               return Align(alignment: Alignment.bottomRight, child: Tab(text: group["tabIndex"]));
+      //             }).toList(),
+      //           ),
+      bottom: LeftAlignedTabBar(
+    tabs: successState.result.map((group) {
+      return Tab( text: group["tabIndex"]);
+    }).toList(),
+  ),
                 actions: [
                   IconButton(
                       onPressed: () {
@@ -329,48 +332,62 @@ if(successState.result.length>0){
                       ))
                 ],
               ),
-              body: TabBarView(
-                children: state.result.map((group) {
-                  // return Center(child: Text(group["symbols"]));
-                  return ListView.builder(
-                    itemCount: group["symbols"].length,
-                    itemBuilder: (context, index) => Container(
-                      margin: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 164, 231, 221),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      group["symbols"][index].name,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(group["symbols"][index].contacts),
-                                  ],
-                                ),
-                              ),
-                            ],
+              body: Container(decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft,end: Alignment.bottomRight, colors: [Color.fromARGB(255, 234,238,241),Color.fromARGB(255, 125, 126, 128)])),
+                child: TabBarView(
+                  children: state.result.map((group) {
+                    // return Center(child: Text(group["symbols"]));
+                    return ListView.builder(
+                      itemCount: group["symbols"].length,
+                      itemBuilder: (context, index) => Card( color: Color.fromARGB(255, 255, 255, 255),
+              
+                        child: Container( 
+                          margin: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 255, 255, 255),borderRadius: BorderRadius.all(Radius.circular(10))
                           ),
-
-                          // ElevatedButton(onPressed: onPressed, child: Text('Click'))
-                        ],
+                          child: 
+                              
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              group["symbols"][index].name,
+                                              style:const  TextStyle(
+                                                color: Color.fromARGB(255,101,110,138),
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(group["symbols"][index].contacts,
+                                              style:const  TextStyle(
+                                                color: Color.fromARGB(255,117,182,196),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                       Image.asset(
+                                      'images/user.jpg',
+                                      fit: BoxFit.contain,height: 50,width:50,
+                                    ),
+                                      ],
+                                    ),
+                                  ),
+                               
+                      
+                              // ElevatedButton(onPressed: onPressed, child: Text('Click'))
+                            
+                          
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           );
@@ -387,4 +404,30 @@ else{
       },
     );
   }
+}
+class LeftAlignedTabBar extends StatelessWidget implements PreferredSizeWidget {
+  final List<Widget> tabs;
+
+ const LeftAlignedTabBar({super.key,  required this.tabs});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(                color: Color.fromARGB(255,27,42,82),
+
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: TabBar(
+          labelColor: Colors.white,
+          unselectedLabelColor: Color.fromARGB(255, 186, 179, 179),
+          tabs: tabs,
+          isScrollable: true,
+          indicatorSize: TabBarIndicatorSize.label,
+          labelPadding:const EdgeInsets.only(left: 20.0), // Adjust left padding
+        ),
+      ),
+    );
+  }
+
+  @override
+  Size get preferredSize =>const Size.fromHeight(kToolbarHeight);
 }
