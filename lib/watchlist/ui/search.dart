@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watchlist/watchlist/bloc/symbols_bloc.dart';
+import 'package:watchlist/watchlist/helpers/alert_dialog.dart';
 import 'package:watchlist/watchlist/helpers/constant.dart';
 import 'package:watchlist/watchlist/models/group_model.dart';
+import 'package:watchlist/watchlist/ui/symbol_tab.dart';
 
 class Search1 extends StatefulWidget {
   const Search1({super.key, required this.groupName, required this.bloc});
@@ -12,64 +14,63 @@ class Search1 extends StatefulWidget {
   State<Search1> createState() => _Search1State();
 }
 
-class _Search1State extends State<Search1>with SingleTickerProviderStateMixin {
-    late TabController _tabController;
-      int get currentTabIndex => _tabController.index;
+class _Search1State extends State<Search1> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  int get currentTabIndex => _tabController.index;
 
   bool isAlphabeticallyAscending = false;
   bool isAlphabeticallyDescending = false;
   bool isUserIdAscending = false;
   bool isUserIdDescending = false;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
     widget.bloc.add(SymbolInitialFetchEvent());
-    // _tabController.addListener(
-    // _handleTabChange); // Add this line to listen to tab changes
   }
-    @override
+
+  @override
   void dispose() {
-    // _tabController.removeListener(_handleTabChange); // Remove the listener
-
     _tabController.dispose();
-
     super.dispose();
   }
- void _showValidationMsg() {
-    showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-              title: const Text('Symbols not Selected'),
-              content: const Text('Select atleast 1 symbol to create a group'),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      // NavigationHelper.navigatePop(context);
-                    },
-                    child: const Text('Ok'))
-              ],
-            ));
+
+  void _showValidationMsg() {
+AlertDialogBox.showAlertDialogBox(context, 'Symbols not Selected','Select atleast 1 symbol to create a group');
+    
+    // showDialog(
+    //     context: context,
+    //     builder: (ctx) => AlertDialog(
+    //           title: const Text('Symbols not Selected'),
+    //           content: const Text('Select atleast 1 symbol to create a group'),
+    //           actions: [
+    //             TextButton(
+    //                 onPressed: () {
+    //                   Navigator.pop(context);
+    //                   // NavigationHelper.navigatePop(context);
+    //                 },
+    //                 child: const Text('Ok'))
+    //           ],
+    //         ));
   }
-   void _check(String sortItem) {
+
+  void _check(String sortItem) {
     int tabSeleted = _tabController.index;
-// List<String>selectedSort=[];
-// selectedSort.add(sortItem);
-print("is tabinde${_tabController.index}");
-    widget.bloc.add(
-        SymbolsSortSingleAddEvent(tabSelected: tabSeleted, sort: sortItem));
+    widget.bloc.add(SymbolsSortSingleAddEvent(tabSelected: tabSeleted, sort: sortItem));
   }
-_showBottomSheet(){
+
+  _showBottomSheet() {
     isAlphabeticallyAscending = false;
     isAlphabeticallyDescending = false;
     isUserIdAscending = false;
     isUserIdDescending = false;
-showModalBottomSheet(context: context, builder: (BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
           return BlocBuilder<SymbolsBloc, SymbolsState>(
             bloc: widget.bloc,
             builder: (context, state) {
-
               switch (state.runtimeType) {
                 // print(widget.bloc.sortResult);
                 case SymbolsBlocInitialFetchSuccessState:
@@ -89,7 +90,7 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                           map['sortList'].contains(USERID_ASCENDING);
                       isUserIdDescending =
                           map['sortList'].contains(USERID_DESCENDING);
-                      print("check ${isAlphabeticallyAscending}");
+                      // print("check ${isAlphabeticallyAscending}");
 
                       // for (var map1 in map["sortList"]) {
                       //                               print("passing inside ${map1}");
@@ -114,16 +115,15 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(
-                                left: 8.0, top: 8,bottom: 3),
+                                left: 8.0, top: 8, bottom: 3),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
+                                 Text(
                                   'Sorting',
                                   style: TextStyle(
                                     fontSize: 18,
-                                                                        color:  Color.fromARGB(255,27,42,82),
-
+                                    color:colorMap['PRIMARY'],
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -145,20 +145,19 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                                       sortLocalList.add(USERID_DESCENDING);
                                     }
                                     // if (sortLocalList.isNotEmpty) {
-                                      widget.bloc.add(SymbolsSortDoneEvent(
-                                          sortList: sortLocalList,
-                                          tabSelected: _tabController.index));
+                                    widget.bloc.add(SymbolsSortDoneEvent(
+                                        sortList: sortLocalList,
+                                        tabSelected: _tabController.index));
                                     // }
 
                                     Navigator.pop(context);
                                   },
-                                  child: const Text(
+                                  child:  Text(
                                     'Done',
                                     style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    color:  Color.fromARGB(255,27,42,82)
-                                    ),
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: colorMap['PRIMARY'],)
                                   ),
                                 ),
                               ],
@@ -180,23 +179,23 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                                             'A',
                                             style: TextStyle(
                                                 color: isAlphabeticallyAscending
-                                                    ? Colors.blue
-                                                    : Colors.black),
+                                                    ? colorMap['BLUE']
+                                                    : colorMap['BLACK']),
                                           ),
                                           Icon(
                                             Icons.arrow_downward,
                                             color: isAlphabeticallyAscending
-                                                ? Colors.blue
-                                                : Colors.black,
+                                                ?  colorMap['BLUE']
+                                                : colorMap['BLACK'],
                                           ),
                                           Text(
                                             'Z',
                                             style: TextStyle(
                                                 color: isAlphabeticallyAscending
-                                                    ? Colors.blue
-                                                    : Colors.black),
+                                                    ?  colorMap['BLUE']
+                                                    : colorMap['BLACK'],
                                           )
-                                        ],
+                                      )],
                                       ),
                                       onTap: () =>
                                           _check(ALPHABETICALLY_ASCENDING),
@@ -210,20 +209,20 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                                             style: TextStyle(
                                                 color:
                                                     isAlphabeticallyDescending
-                                                        ? Colors.blue
-                                                        : Colors.black),
+                                                        ?  colorMap['BLUE']
+                                                        : colorMap['BLACK']),
                                           ),
                                           Icon(Icons.arrow_downward,
                                               color: isAlphabeticallyDescending
-                                                  ? Colors.blue
-                                                  : Colors.black),
+                                                  ?  colorMap['BLUE']
+                                                  : colorMap['BLACK']),
                                           Text(
                                             'A',
                                             style: TextStyle(
                                                 color:
                                                     isAlphabeticallyDescending
-                                                        ? Colors.blue
-                                                        : Colors.black),
+                                                        ?  colorMap['BLUE']
+                                                        : colorMap['BLACK']),
                                           )
                                         ],
                                       ),
@@ -235,7 +234,7 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                               ],
                             ),
                           ),
-                          Padding(
+                          const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 10.0),
                             child: Divider(
                               height: 10,
@@ -244,12 +243,12 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 10.0, vertical: 7),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('User Id'),
+                                const Text('User Id'),
                                 Row(
                                   children: [
                                     InkWell(
@@ -259,40 +258,40 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                                             '0',
                                             style: TextStyle(
                                                 color: isUserIdAscending
-                                                    ? Colors.blue
-                                                    : Colors.black),
+                                                    ?  colorMap['BLUE']
+                                                    : colorMap['BLACK']),
                                           ),
                                           Icon(Icons.arrow_downward,
                                               color: isUserIdAscending
-                                                  ? Colors.blue
-                                                  : Colors.black),
+                                                  ?  colorMap['BLUE']
+                                                  : colorMap['BLACK']),
                                           Text('9',
                                               style: TextStyle(
                                                   color: isUserIdAscending
-                                                      ? Colors.blue
-                                                      : Colors.black))
+                                                      ?  colorMap['BLUE']
+                                                      : colorMap['BLACK']))
                                         ],
                                       ),
                                       onTap: () => _check(USERID_ASCENDING),
                                     ),
-                                 const  SizedBox(width: 20),
+                                    const SizedBox(width: 20),
                                     InkWell(
                                       child: Row(
                                         children: [
                                           Text('9',
                                               style: TextStyle(
                                                   color: isUserIdDescending
-                                                      ? Colors.blue
-                                                      : Colors.black)),
+                                                      ?  colorMap['BLUE']
+                                                      : colorMap['BLACK'])),
                                           Icon(Icons.arrow_downward,
                                               color: isUserIdDescending
-                                                  ? Colors.blue
-                                                  : Colors.black),
+                                                  ?  colorMap['BLUE']
+                                                  : colorMap['BLACK']),
                                           Text('0',
                                               style: TextStyle(
                                                   color: isUserIdDescending
-                                                      ? Colors.blue
-                                                      : Colors.black))
+                                                      ?  colorMap['BLUE']
+                                                      : colorMap['BLACK']))
                                         ],
                                       ),
                                       onTap: () => _check(USERID_DESCENDING),
@@ -307,101 +306,115 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                     ),
                   );
                 default:
-                  return Text("o");
+                  return const Text("Empty!");
               }
             },
           );
-        } );}
+        });
+  }
 
-          Future<bool> _onBackPressed() async {
-            print('back button clicke');
-              widget.bloc.add(SymbolsBackButtonNavigationEvent());
-                return true;
+  Future<bool> _onBackPressed() async {
+    // print('back button clicke');
+    widget.bloc.add(SymbolsBackButtonNavigationEvent());
+    return true;
+  }
 
-          }
   @override
   Widget build(BuildContext context) {
-    return WillPopScope( onWillPop: _onBackPressed,
-      child: Scaffold(appBar: AppBar(
-              title: const Text('Symbols',style: TextStyle(color: Colors.white),
-),
-                              backgroundColor: Color.fromARGB(255,27,42,82),
-
-             ),floatingActionButton: Column(
-  mainAxisAlignment: MainAxisAlignment.end,
-  children: [
-    Container(
-      alignment: Alignment.bottomRight,
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: FloatingActionButton(
-        onPressed: () {
-          // Handle button press for sorting
-          _showBottomSheet();
-        },
-        child: Icon(Icons.sort,color: Colors.white,),
-        elevation: 8,
-        backgroundColor: Color.fromARGB(255,27,42,82), // Customize the background color
-      ),
-    ),
-    SizedBox(height: 10), // Add spacing between buttons
-    Container(
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: ElevatedButton(
-        onPressed: () {
-          // Handle button press for adding to group
-          if (widget.bloc.symbolLocalList.isNotEmpty) {
-            widget.bloc.add(SymbolsAddToGroupEvent(
-              groupName: widget.groupName,
-              symbolLocalList: widget.bloc.symbolLocalList,
-            ));
-            Navigator.of(context).pop();
-          } else {
-            _showValidationMsg();
-          }
-        },
-        child: const Text('Add to group',style: TextStyle(color: Colors.white),),
-        style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255,27,42,82),
-          elevation: 8,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30), // Round button corners
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          title:  Text(
+            'Symbols',
+            style: TextStyle(color: colorMap['WHITE_LABEL']),
           ),
+          backgroundColor: colorMap['PRIMARY'],
         ),
-      ),
-    ),
-  ],
-),
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              alignment: Alignment.bottomRight,
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              child: FloatingActionButton(
+                onPressed: () {
+                  // Handle button press for sorting
+                  _showBottomSheet();
+                },
+                elevation: 8,
+                backgroundColor: colorMap['PRIMARY'],
+                child:  Icon(
+                  Icons.sort,
+                  color: colorMap['WHITE_LABEL'],
+                ),
+                // Customize the background color
+              ),
+            ),
+            const SizedBox(height: 10), // Add spacing between buttons
+            Container(
+              width: double.infinity,
+              alignment: Alignment.center,
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              child: ElevatedButton(
+                onPressed: () {
+                  // Handle button press for adding to group
+                  if (widget.bloc.symbolLocalList.isNotEmpty) {
+                    widget.bloc.add(SymbolsAddToGroupEvent(
+                      groupName: widget.groupName,
+                      symbolLocalList: widget.bloc.symbolLocalList,
+                    ));
+                    Navigator.of(context).pop();
+                  } else {
+                    _showValidationMsg();
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorMap['PRIMARY'],
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(30), // Round button corners
+                  ),
+                ),
+                child:  Text(
+                  'Add to group',
+                  style: TextStyle(color: colorMap['WHITE_LABEL']),
+                ),
+              ),
+            ),
+          ],
+        ),
         // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        
-    
-        body: BlocConsumer<SymbolsBloc, SymbolsState>(
-            bloc: widget.bloc,
+
+        body: BlocConsumer<SymbolsBloc, SymbolsState>(            bloc: widget.bloc,
             listener: (context, state) {
               // You can handle any additional UI-related logic here if needed
-           
             },
             builder: (context, state) {
               switch (state.runtimeType) {
                 case SymbolsBlocInitialFetchLoadingState:
                   return const Center(child: CircularProgressIndicator());
                 case SymbolsFetchErrorState:
-                  return const Center(child: Text('Error in retrieving data !!'));
+                  return const Center(
+                      child: Text('Error in retrieving data !!'));
                 case SymbolsBlocInitialFetchSuccessState:
                   final successState =
                       state as SymbolsBlocInitialFetchSuccessState;
                   var dataList = successState.symbols;
-    
+
                   return DefaultTabController(
-                    
                     length: dataList.length,
                     child: Column(
                       children: [
-                        Container( color: Color.fromARGB(255,27,42,82),
+                        Container(
+                          color:colorMap['PRIMARY'] ,
                           child: TabBar(
- labelColor: Colors.white,
-          unselectedLabelColor: Color.fromARGB(255, 186, 179, 179),
-                                    controller: _tabController,
+                            labelColor: colorMap['WHITE_LABEL'] ,
+                            unselectedLabelColor:
+                                colorMap['UNSELECTED_LABEL'],
+                            controller: _tabController,
                             isScrollable: true,
                             tabs: List.generate(
                               dataList.length,
@@ -411,11 +424,12 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                         ),
                         Expanded(
                           child: TabBarView(
-                                            controller: _tabController, // Pass the _tabController here
-    
+                            controller:
+                                _tabController, // Pass the _tabController here
+
                             children: List.generate(
                               dataList.length,
-                              (index) => ContactTab(
+                              (index) => SymbolTab(
                                   contacts: dataList[index], bloc: widget.bloc),
                             ),
                           ),
@@ -423,96 +437,14 @@ showModalBottomSheet(context: context, builder: (BuildContext context) {
                       ],
                     ),
                   );
-    
+
                 default:
                   return const SizedBox(
                     height: 10,
                   );
               }
-              ;
             }),
       ),
-    );
-  }
-}
-
-class ContactTab extends StatelessWidget {
-  final List<GroupModel> contacts;
-  final SymbolsBloc bloc;
-
-  const ContactTab({required this.contacts, required this.bloc});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: contacts.length,
-      itemBuilder: (context, index) {
-        return
-            // ListTile(
-            //   title: Text(contacts[index].name),
-            //   // Other contact details
-            // );
-
-            Card(color: Color.fromARGB(255, 255, 255, 255),
-              child: Container(
-                      margin: const EdgeInsets.all(4),
-                      decoration:  const BoxDecoration(
-                              color: Color.fromARGB(255, 255, 255, 255),borderRadius: BorderRadius.all(Radius.circular(10))
-                            ),
-                      child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            contacts[index].name,
-                             style:const  TextStyle(
-                                                color: Color.fromARGB(255,101,110,138),
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                          ),
-                          Text(contacts[index].contacts, style:const  TextStyle(
-                                                color: Color.fromARGB(255,117,182,196),
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold,
-                                              )),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                contacts[index].checkedNew
-                    ? IconButton(
-                        onPressed: () {
-                          bloc.add(SymbolAddToListEvent(
-                              groupModel: contacts[index], checked: false));
-                        },
-                        icon: const Icon(
-                          Icons.check_circle_sharp,
-                          size: 30,color: Color.fromARGB(255, 2, 99, 5),
-                        ))
-                    : IconButton(
-                        onPressed: () {
-                          bloc.add(SymbolAddToListEvent(
-                              groupModel: contacts[index], checked: true));
-                        },
-                        icon: const Icon(
-                          Icons.check_circle_outline_sharp,color: Color.fromARGB(255, 157, 165, 158),
-                          size: 30,
-                        ))
-                // ElevatedButton(onPressed: onPressed, child: Text('Click'))
-              ],
-                      ),
-                    ),
-            );
-      },
     );
   }
 }

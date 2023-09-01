@@ -4,7 +4,7 @@ part of 'symbols_bloc.dart';
 sealed class SymbolsState {}
 
 final class SymbolsInitial extends SymbolsState {}
-final class SymbolsBlocInitialFetchSuccessState extends SymbolsState {
+ class SymbolsBlocInitialFetchSuccessState extends SymbolsState {
   final List<List<GroupModel>>  symbols;
   List<Map<String, dynamic>> sortResult = [];
 
@@ -19,4 +19,4 @@ final class SymbolsAddedToGroupSuccessState extends SymbolsState {
   final List<Map<String, dynamic>> result;
   SymbolsAddedToGroupSuccessState({required this.result});
 }
-final class openBottomSheetSuccessEvent extends SymbolsState {}
+final class OpenBottomSheetSuccessEvent extends SymbolsState {}

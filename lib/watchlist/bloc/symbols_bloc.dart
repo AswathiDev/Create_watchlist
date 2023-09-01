@@ -2,10 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
 import 'package:watchlist/watchlist/helpers/constant.dart';
 import 'package:watchlist/watchlist/models/group_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:watchlist/watchlist/respos/symbols_repo.dart';
 
 part 'symbols_event.dart';
 part 'symbols_state.dart';
@@ -36,29 +37,11 @@ class SymbolsBloc extends Bloc<SymbolsEvent, SymbolsState> {
   FutureOr<void> symbolInitialFetchEvent(
       SymbolInitialFetchEvent event, Emitter<SymbolsState> emit) async {
     emit(SymbolsBlocInitialFetchLoadingState());
-
-    // _symbolsList = await SymbolsRepo.fetchPost();
-    print(sortResult);
-    var client = http.Client();
-    List<GroupModel> itemList = [];
-    try {
-      var response = await client.get(Uri.parse(
-          'http://5e53a76a31b9970014cf7c8c.mockapi.io/msf/getContacts'));
-
-      var result = jsonDecode(response.body);
-      for (int i = 0; i < result.length; i++) {
-        GroupModel post = GroupModel.fromJson(result[i]);
-        post.checked = false;
-        itemList.add(post);
-      }
-      _symbolsList = itemList;
+try{
+    _symbolsList = await SymbolsRepo.fetchPost();
+ 
       dividedContacts = _divideContactsIntoGroups(_symbolsList, 20);
-      for (int i = 0; i < dividedContacts.length; i++) {
-        print("Group ${i + 1}:");
-        for (var contact in dividedContacts[i]) {
-          print("Name: ${contact.name}, Contacts: ${contact.contacts}");
-        }
-      }
+  
       sortResult=[];
       emit(SymbolsBlocInitialFetchSuccessState(
           symbols: dividedContacts, sortResult: sortResult));
@@ -99,7 +82,7 @@ class SymbolsBloc extends Bloc<SymbolsEvent, SymbolsState> {
       final index =
           groupList.indexWhere((item) => item.id == event.groupModel.id);
       if (index != -1) {
-        print(event.groupModel.name);
+        // print(event.groupModel.name);
         final updatedGroupModel = GroupModel(
           id: event.groupModel.id,
           url: event.groupModel.url,
@@ -118,7 +101,7 @@ class SymbolsBloc extends Bloc<SymbolsEvent, SymbolsState> {
     } else {
       symbolLocalList.remove(event.groupModel);
     }
-    print(symbolLocalList.length);
+    // print(symbolLocalList.length);
     emit(SymbolsBlocInitialFetchSuccessState(
         symbols: dividedContacts, sortResult: sortResult));
   }
@@ -135,7 +118,7 @@ class SymbolsBloc extends Bloc<SymbolsEvent, SymbolsState> {
     //   }
     //   groupedData[groupModel.name]!.add(groupModel.id);
     // }
-    print("${event.groupName}${event.symbolLocalList}");
+    // print("${event.groupName}${event.symbolLocalList}");
     symbolLocalList = [];
 
     Map<String, dynamic> groupMap = {
@@ -149,14 +132,14 @@ class SymbolsBloc extends Bloc<SymbolsEvent, SymbolsState> {
     if (!groupExists) {
       result.add(groupMap);
     }
-    print("result is ${result}");
+    // print("result is ${result}");
     emit(SymbolsAddedToGroupSuccessState(result: result));
     // print(result);
   }
 
   FutureOr<void> openBottomSheetEvent(
       OpenBottomSheetEvent event, Emitter<SymbolsState> emit) {
-    emit(openBottomSheetSuccessEvent());
+    emit(OpenBottomSheetSuccessEvent());
   }
 
   FutureOr<void> symbolsSortSingleAddEvent(
@@ -166,10 +149,10 @@ class SymbolsBloc extends Bloc<SymbolsEvent, SymbolsState> {
 
     for (var i = 0; i < sortResult.length; i++) {
       if (sortResult[i]["tabIndex"] == event.tabSelected) {
-        print("tab index alraedy present");
+        // print("tab index alraedy present");
         tabIndexExists = true;
         if (!sortResult[i]["sortList"].contains(event.sort)) {
-          print("adding item to sortlist");
+          // print("adding item to sortlist");
           if (event.sort == ALPHABETICALLY_ASCENDING) {
             if (sortResult[i]["sortList"].contains(ALPHABETICALLY_DESCENDING)) {
               sortResult[i]["sortList"].add(event.sort);
@@ -200,15 +183,15 @@ class SymbolsBloc extends Bloc<SymbolsEvent, SymbolsState> {
               sortResult[i]["sortList"].add(event.sort);
             }
           }
-          print(sortResult);
+          // print(sortResult);
           emit(SymbolsBlocInitialFetchSuccessState(
               symbols: dividedContacts, sortResult: sortResult));
           // emit(SortListState(sortResult: sortResult));
           newItemExists = true;
         } else {
-          print('trying to remove');
+          // print('trying to remove');
           sortResult[i]["sortList"].remove(event.sort);
-          print(sortResult[i]["sortList"]);
+          // print(sortResult[i]["sortList"]);
           emit(SymbolsBlocInitialFetchSuccessState(
               symbols: dividedContacts, sortResult: sortResult));
         }
@@ -222,11 +205,11 @@ class SymbolsBloc extends Bloc<SymbolsEvent, SymbolsState> {
         "sortList": [event.sort]
       });
 
-      print('new item adding');
+      // print('new item adding');
       emit(SymbolsBlocInitialFetchSuccessState(
           symbols: dividedContacts, sortResult: sortResult));
     } else if (!newItemExists) {
-      print('already present');
+      // print('already present');
       emit(SymbolsBlocInitialFetchSuccessState(
           symbols: dividedContacts, sortResult: sortResult));
 
@@ -377,7 +360,7 @@ FutureOr<void> symbolsSortDone(
 
 
   FutureOr<void> symbolsBackButtonNavigationEvent(SymbolsBackButtonNavigationEvent event, Emitter<SymbolsState> emit) {
-    print('result:${result}');
+    // print('result:${result}');
         emit(SymbolsAddedToGroupSuccessState(result: result));
 
   }

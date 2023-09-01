@@ -21,13 +21,13 @@ class OpenBottomSheetEvent extends SymbolsEvent{
 
 }
 class SymbolsSortDoneEvent extends SymbolsEvent{
-   int tabSelected;
+  final int tabSelected;
     List<String> sortList = [];
     SymbolsSortDoneEvent({required this.tabSelected,required this.sortList});
 }
 class SymbolsSortSingleAddEvent extends SymbolsEvent{
-  late int tabSelected;
- late String sort ;
+  late final int tabSelected;
+ late final String sort ;
     SymbolsSortSingleAddEvent({required this.tabSelected,required this.sort});
 }
 class SymbolsBackButtonNavigationEvent extends SymbolsEvent{
